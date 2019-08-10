@@ -49,11 +49,11 @@ msgstr ""
 
 msgctxt "field:purchase.request,create_date:"
 msgid "Create Date"
-msgstr ""
+msgstr "Vytvor dátum"
 
 msgctxt "field:purchase.request,create_uid:"
 msgid "Create User"
-msgstr ""
+msgstr "Vytvor používateľa"
 
 msgctxt "field:purchase.request,default_uom_digits:"
 msgid "Default UOM Digits"
@@ -65,7 +65,7 @@ msgstr "Popis"
 
 msgctxt "field:purchase.request,exception_ignored:"
 msgid "Ignored Exception"
-msgstr ""
+msgstr "Ignorovaná výnimka"
 
 msgctxt "field:purchase.request,id:"
 msgid "ID"
@@ -73,23 +73,23 @@ msgstr ""
 
 msgctxt "field:purchase.request,origin:"
 msgid "Origin"
-msgstr ""
+msgstr "Zdroj"
 
 msgctxt "field:purchase.request,party:"
 msgid "Party"
-msgstr ""
+msgstr "Zmluvná strana"
 
 msgctxt "field:purchase.request,product:"
 msgid "Product"
-msgstr ""
+msgstr "Produkt"
 
 msgctxt "field:purchase.request,purchase:"
 msgid "Purchase"
-msgstr ""
+msgstr "Nákup"
 
 msgctxt "field:purchase.request,purchase_date:"
 msgid "Best Purchase Date"
-msgstr ""
+msgstr "Odporúčaný dátum objednávky"
 
 msgctxt "field:purchase.request,purchase_line:"
 msgid "Purchase Line"
@@ -125,7 +125,7 @@ msgstr ""
 
 msgctxt "field:purchase.request,warehouse:"
 msgid "Warehouse"
-msgstr "Veľkoobchod"
+msgstr "Veľkosklad"
 
 msgctxt "field:purchase.request,warehouse_required:"
 msgid "Warehouse Required"
@@ -141,11 +141,11 @@ msgstr ""
 
 msgctxt "field:purchase.request.create_purchase.ask_party,company:"
 msgid "Company"
-msgstr ""
+msgstr "Spoločnosť"
 
 msgctxt "field:purchase.request.create_purchase.ask_party,description:"
 msgid "Description"
-msgstr ""
+msgstr "Popis"
 
 msgctxt "field:purchase.request.create_purchase.ask_party,id:"
 msgid "ID"
@@ -197,12 +197,11 @@ msgstr "Handle Purchase Cancellation"
 
 msgctxt "model:ir.ui.menu,name:menu_purchase_request_form"
 msgid "Purchase Requests"
-msgstr "Purchase Requests"
+msgstr "Žiadosti o nákup"
 
-#, fuzzy
 msgctxt "model:purchase.request,name:"
 msgid "Purchase Request"
-msgstr "Purchase Request"
+msgstr "Žiadosť o nákup"
 
 msgctxt "model:purchase.request.create_purchase.ask_party,name:"
 msgid "Create Purchase Ask Party"
@@ -214,7 +213,7 @@ msgstr ""
 
 msgctxt "model:res.group,name:group_purchase_request"
 msgid "Purchase Request"
-msgstr "Purchase Request"
+msgstr "Žiadosť o nákup"
 
 msgctxt "selection:purchase.request,state:"
 msgid "Cancel"
