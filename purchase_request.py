@@ -5,7 +5,9 @@ from decimal import Decimal
 from itertools import groupby
 from functools import partial
 
+from trytond.i18n import gettext
 from trytond.model import ModelView, ModelSQL, fields
+from trytond.model.exceptions import AccessError
 from trytond.wizard import Wizard, StateView, StateTransition, Button
 from trytond.pyson import If, In, Eval, Bool
 from trytond.transaction import Transaction
@@ -85,12 +87,6 @@ class PurchaseRequest(ModelSQL, ModelView):
     def __setup__(cls):
         super(PurchaseRequest, cls).__setup__()
         cls._order[0] = ('id', 'DESC')
-        cls._error_messages.update({
-                'create_request': ('Purchase requests are only created '
-                    'by the system.'),
-                'delete_purchase_line': ('You can not delete purchased '
-                    'request.'),
-                })
         cls._buttons.update({
                 'handle_purchase_cancellation_exception': {
                     'invisible': Eval('state') != 'exception',
@@ -159,12 +155,17 @@ class PurchaseRequest(ModelSQL, ModelView):
         tablehandler.not_null_action('origin', action='remove')
 
     def get_rec_name(self, name):
-        product_name = (self.product.name if self.product else
-            self.description.splitlines()[0])
-        if self.warehouse:
-            return "%s@%s" % (product_name, self.warehouse.name)
+        if self.product:
+            rec_name = self.product.name
+        elif self.description:
+            rec_name = self.description.splitlines()[0]
         else:
-            return product_name
+            rec_name = str(self.id)
+
+        if self.warehouse:
+            return "%s@%s" % (rec_name, self.warehouse.name)
+        else:
+            return rec_name
 
     @classmethod
     def search_rec_name(cls, name, clause):
@@ -256,35 +257,47 @@ class PurchaseRequest(ModelSQL, ModelView):
         for vals in vlist:
             for field_name in ('quantity', 'company'):
                 if vals.get(field_name) is None:
-                    cls.raise_user_error('create_request')
+                    raise AccessError(
+                        gettext('purchase_request.msg_request_no_create'))
         return super(PurchaseRequest, cls).create(vlist)
 
     @classmethod
     def delete(cls, requests):
-        if any(r.purchase_line for r in requests):
-            cls.raise_user_error('delete_purchase_line')
+        for request in requests:
+            if request.purchase_line:
+                raise AccessError(
+                    gettext('purchase_request.msg_request_delete_purchased',
+                        request=request.rec_name))
         super(PurchaseRequest, cls).delete(requests)
 
     @classmethod
-    def find_best_supplier(cls, product, date):
+    def find_best_product_supplier(cls, product, date, **pattern):
+        "Return the best product supplier to request product at date"
+        pool = Pool()
+        Date = pool.get('ir.date')
+        today = Date.today()
+        for product_supplier in product.product_suppliers_used(**pattern):
+            supply_date = product_supplier.compute_supply_date(date=today)
+            timedelta = date - supply_date
+            if timedelta >= datetime.timedelta(0):
+                return product_supplier
+
+    @classmethod
+    def find_best_supplier(cls, product, date, **pattern):
         '''
         Return the best supplier and purchase_date for the product.
         '''
-        Date = Pool().get('ir.date')
+        pool = Pool()
+        Date = pool.get('ir.date')
 
-        supplier = None
-        today = Date.today()
-        for product_supplier in product.product_suppliers:
-            supply_date = product_supplier.compute_supply_date(date=today)
-            timedelta = date - supply_date
-            if not supplier and timedelta >= datetime.timedelta(0):
-                supplier = product_supplier.party
-                break
-
-        if supplier:
+        product_supplier = cls.find_best_product_supplier(
+            product, date, **pattern)
+        if product_supplier:
+            supplier = product_supplier.party
             purchase_date = product_supplier.compute_purchase_date(date)
         else:
-            purchase_date = today
+            supplier = None
+            purchase_date = Date.today()
         return supplier, purchase_date
 
     @classmethod
@@ -312,15 +325,6 @@ class CreatePurchase(Wizard):
             Button('Cancel', 'end', 'tryton-cancel'),
             Button('Continue', 'start', 'tryton-forward', default=True),
             ])
-
-    @classmethod
-    def __setup__(cls):
-        super(CreatePurchase, cls).__setup__()
-        cls._error_messages.update({
-                'missing_price': 'Purchase price is missing for product "%s".',
-                'please_update': ('This price is necessary for creating '
-                    'purchases.'),
-                })
 
     def default_ask_party(self, fields):
         Request = Pool().get('purchase.request')

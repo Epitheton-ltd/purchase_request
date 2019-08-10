@@ -138,6 +138,7 @@ this repository contains the full copyright notices and license terms. -->
         </record>
 
         <record model="ir.rule.group" id="rule_group_purchase_request">
+            <field name="name">User in company</field>
             <field name="model" search="[('model', '=', 'purchase.request')]"/>
             <field name="global_p" eval="True"/>
         </record>
@@ -175,11 +176,6 @@ this repository contains the full copyright notices and license terms. -->
         <record model="res.user-res.group"
             id="user_admin_group_purchase_request">
             <field name="user" ref="res.user_admin"/>
-            <field name="group" ref="group_purchase_request"/>
-        </record>
-        <record model="res.user-res.group"
-            id="user_trigger_group_purchase_request">
-            <field name="user" ref="res.user_trigger"/>
             <field name="group" ref="group_purchase_request"/>
         </record>
 
